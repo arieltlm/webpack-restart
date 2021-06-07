@@ -1,0 +1,8 @@
+.hello{
+    color:red;
+    background:url('./images/bg.png') no-repeat;
+}
+img{
+    width:300px;
+    height:300px;
+}
