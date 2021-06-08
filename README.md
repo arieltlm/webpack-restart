@@ -141,10 +141,21 @@
   },
   ```
 
-  
+  使用HtmlWebpackPlugin（html-webpack-plugin）将生成一个包含正确output的文件名的index.html；还有一些其他用于html中的配置可以参考[github html-webpack-plugin](https://github.com/jaketrent/html-webpack-template)
 
-  
+  清理dist下的之前的文件使用clean-webpack-plugin插件;
 
+  ```js
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+  const {CleanWebpackPlugin} = require('clean-webpack-plugin');
+  plugins: [
+      new CleanWebpackPlugin(),
+      new HtmlWebpackPlugin({
+          title: '管理输出'
+      })
+  ],
+  ```
   
-
+  webpack 和 webpack 插件似乎“知道”应该哪些文件生成。答案是，webpack 通过 [manifest](https://v4.webpack.docschina.org/concepts/manifest)，可以追踪所有模块到输出 bundle 之间的映射；后续继续研究[manifest](https://v4.webpack.docschina.org/concepts/manifest)
+  
   
