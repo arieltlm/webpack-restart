@@ -1,8 +1,10 @@
 import './style.css'
 import svgCanvas from './images/svg-canvas.png';
+import printMe from './print.js'
 
 function component() {
-    let element = document.createElement('div');
+    var element = document.createElement('div');
+    var btn = document.createElement('button')
   
     element.innerHTML = 'Hello webpack';
     element.classList.add('hello');
@@ -11,6 +13,11 @@ function component() {
     myImg.src = svgCanvas
     
     element.appendChild(myImg)
+
+    btn.innerHTML = '点击这里，然后查看 console！';
+    btn.onclick = printMe;
+
+    element.appendChild(btn);
   
     return element;
   }
