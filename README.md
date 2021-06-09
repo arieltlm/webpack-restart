@@ -146,7 +146,7 @@
   清理dist下的之前的文件使用clean-webpack-plugin插件;
 
   ```js
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+  const HtmlWebpackPlugin = require('html-webpack-plugin');
   const {CleanWebpackPlugin} = require('clean-webpack-plugin');
   plugins: [
       new CleanWebpackPlugin(),
@@ -155,7 +155,45 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
       })
   ],
   ```
+
+  webpack 和 webpack 插件似乎“知道”应该哪些文件生成。答案是，webpack 通过 [manifest](https://v4.webpack.docschina.org/concepts/manifest)，可以追踪所有模块到输出 bundle 之间的映射；后续继续研究[manifest](https://v4.webpack.docschina.org/concepts/manifest)——当 compiler 开始执行、解析和映射应用程序时，它会保留所有模块的详细要点。这个数据集合称为 "manifest"，当完成打包并发送到浏览器时，runtime 会通过 manifest 来解析和加载模块。无论你选择哪种 [模块语法](https://v4.webpack.docschina.org/api/module-methods)，那些 `import` 或 `require` 语句现在都已经转换为 `__webpack_require__` 方法，此方法指向模块标识符(module identifier)。通过使用 manifest 中的数据，runtime 将能够检索这些标识符，找出每个标识符背后对应的模块。
+
+  # 4.开发环境
+
+  ## 4.1 source-map
+
+  [devtool文档](https://v4.webpack.docschina.org/configuration/devtool)
+
+  ```js
+  // print.js
+  export default function printMe() {
+      cosnole.log('I get called from print.js!');
+  }
+  ```
+
+  * 不设置
+
+    ![image-20210609085114693](./typora-image/image-20210609085114693.png)
+
+    ![image-20210609085130850](./typora-image/image-20210609085130850.png)
+
+  * `devtool: 'inline-source-map',`
+
+  ![image-20210609084503813](./typora-image/image-20210609084503813.png)
+
+  ​	![image-20210609084637047](./typora-image/image-20210609084637047.png)
+
   
-  webpack 和 webpack 插件似乎“知道”应该哪些文件生成。答案是，webpack 通过 [manifest](https://v4.webpack.docschina.org/concepts/manifest)，可以追踪所有模块到输出 bundle 之间的映射；后续继续研究[manifest](https://v4.webpack.docschina.org/concepts/manifest)
-  
-  
+
+  * `devtool: 'eval',`
+
+  ![image-20210609084853876](./typora-image/image-20210609084853876.png)
+
+  ![image-20210609084913326](./typora-image/image-20210609084913326.png)
+
+  * `devtool:'nosources-source-map'`
+
+    ![image-20210609085002568](./typora-image/image-20210609085002568.png)
+
+    ​	![image-20210609085030022](./typora-image/image-20210609085030022.png)
+

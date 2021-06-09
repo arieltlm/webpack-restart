@@ -9,7 +9,9 @@ module.exports = {
         app: './src/index.js',
         print: './src/print.js'
     },
-    devtool: 'inline-source-map',
+    // devtool: 'inline-source-map',
+    // devtool: 'eval',
+    // devtool: 'nosources-source-map',
     output: {
         // filename: 'bundle.js',
         filename: '[name].bundle.js',
