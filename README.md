@@ -197,3 +197,15 @@
 
     ​	![image-20210609085030022](./typora-image/image-20210609085030022.png)
 
+## 4.2 使用watch模式
+
+```json
+ "watch": "webpack --watch",
+```
+
+官网上说其有缺点——[唯一的缺点是，为了看到修改后的实际效果，你需要刷新浏览器。如果能够自动刷新浏览器就更好了，因此接下来我们会尝试通过 `webpack-dev-server` 实现此功能。](https://v4.webpack.docschina.org/guides/development/#%E4%BD%BF%E7%94%A8-watch-mode-%E8%A7%82%E5%AF%9F%E6%A8%A1%E5%BC%8F-)
+
+但是我在实际测试中，修改一个代码，然后点击保存浏览器上立马就发生变化了——oh，我明白了，因为我使用vscode的live-server起了一个本地server，所以及时更新了浏览器；
+
+## 4.3 webapck-dev-sever
+

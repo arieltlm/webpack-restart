@@ -6,7 +6,7 @@ function component() {
     var element = document.createElement('div');
     var btn = document.createElement('button')
   
-    element.innerHTML = 'Hello webpack';
+    element.innerHTML = 'Hello webpack 1';
     element.classList.add('hello');
 
     var myImg = new Image()
@@ -14,7 +14,7 @@ function component() {
     
     element.appendChild(myImg)
 
-    btn.innerHTML = '点击这里，然后查看 console！';
+    btn.innerHTML = '点击这里，然后查看1 console！';
     btn.onclick = printMe;
 
     element.appendChild(btn);

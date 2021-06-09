@@ -17,6 +17,9 @@ module.exports = {
         filename: '[name].bundle.js',
         path: path.resolve(__dirname, 'dist')
     },
+    devServer: {
+        contentBase: './dist' // 告诉 dev server，从什么位置查找文件
+    },
     module: {
         rules: [
         {
