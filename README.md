@@ -129,7 +129,9 @@
 
   [*在使用* [d3](https://github.com/d3) *等工具实现某些数据可视化时，这个功能极其有用。可以不用在运行时再去发送一个 ajax 请求获取和解析数据，而是在构建过程中将其提前加载到模块中，以便浏览器加载模块后，直接就可以访问解析过的数据。*](https://v4.webpack.docschina.org/guides/asset-management)?
 
-  # 3.管理输出
+  
+
+# 3.管理输出
 
   ```js
   // 单个输入
@@ -158,9 +160,9 @@
 
   webpack 和 webpack 插件似乎“知道”应该哪些文件生成。答案是，webpack 通过 [manifest](https://v4.webpack.docschina.org/concepts/manifest)，可以追踪所有模块到输出 bundle 之间的映射；后续继续研究[manifest](https://v4.webpack.docschina.org/concepts/manifest)——当 compiler 开始执行、解析和映射应用程序时，它会保留所有模块的详细要点。这个数据集合称为 "manifest"，当完成打包并发送到浏览器时，runtime 会通过 manifest 来解析和加载模块。无论你选择哪种 [模块语法](https://v4.webpack.docschina.org/api/module-methods)，那些 `import` 或 `require` 语句现在都已经转换为 `__webpack_require__` 方法，此方法指向模块标识符(module identifier)。通过使用 manifest 中的数据，runtime 将能够检索这些标识符，找出每个标识符背后对应的模块。
 
-  # 4.开发环境
+# 4.开发环境
 
-  ## 4.1 source-map
+## 4.1 source-map
 
   [devtool文档](https://v4.webpack.docschina.org/configuration/devtool)
 
@@ -194,8 +196,8 @@
   * `devtool:'nosources-source-map'`
 
     ![image-20210609085002568](./typora-image/image-20210609085002568.png)
-
-    ​	![image-20210609085030022](./typora-image/image-20210609085030022.png)
+  
+    ![image-20210609085030022](./typora-image/image-20210609085030022.png)
 
 ## 4.2 使用watch模式
 
@@ -208,4 +210,54 @@
 但是我在实际测试中，修改一个代码，然后点击保存浏览器上立马就发生变化了——oh，我明白了，因为我使用vscode的live-server起了一个本地server，所以及时更新了浏览器；
 
 ## 4.3 webapck-dev-sever
+
+[dev server文档](https://v4.webpack.docschina.org/configuration/dev-server/)
+
+一个简单的web server;
+
+具有实时重新加载功能；
+
+```js
+devServer: {
+    contentBase: path.join(__dirname, 'dist'), // 告诉 dev server，从什么位置查找文件,可以有多个 [path.join(__dirname, 'public'), path.join(__dirname, 'assets')]
+    publicPath: '/', 
+    before: function(app, server) { // 在服务内部的所有其他中间件之前， 提供执行自定义中间件的功能
+        app.get('/some/path', function(req, res) {
+            res.json({ custom: 'response' });
+        });
+    },
+    after: function(app, server) { // 在服务内部的所有其他中间件之后， 提供执行自定义中间件的功能。
+        // 做些有趣的事
+    },
+    compress: true, // 一切服务都启用 gzip 压缩
+    historyApiFallback:true,// 任意的 404 响应都可能需要被替代为 index.html。 默认禁用;还可以写rewrites
+    host:'localhost',
+    hot:true,
+    https: true, // 可以自己增加key,cert,ca
+    inline: true, // 在 dev-server 的两种不同模式之间切换。默认情况下，应用程序启用内联模式(inline mode)。这意味着一段处理实时重载的脚本被插入到你的包(bundle)中，并且构建消息将会出现在浏览器控制台。也可以使用 iframe 模式，它在通知栏下面使用 <iframe> 标签，包含了关于构建的消息。切换到 iframe 模式
+    lazy: true, // dev-server 只有在请求时才编译包(bundle)。这意味着 webpack 不会监视任何文件改动。我们称之为惰性模式。
+    noInfo: true, //告诉 dev-server 隐藏 webpack bundle 信息之类的消息,默认禁用
+    open: true, // 告诉 dev-server 在 server 启动后打开浏览器。默认禁用
+    openPage: '/different/page', // 指定打开浏览器时的导航页面
+    port: 8080, // 指定要监听请求的端口号
+    proxy: { // 代理 http-proxy-middleware 
+        '/api': {
+            target: 'http://localhost:3000',
+            pathRewrite: {'^/api' : ''} // 不想始终传递 /api ，则需要重写路径
+        }
+    },
+},
+```
+
+> *webpack-dev-server 在编译之后不会写入到任何输出文件。而是将 bundle 文件保留在内存中，然后将它们 serve 到 server 中，就好像它们是挂载在 server 根路径上的真实文件一样。如果你的页面希望在其他不同路径中找到 bundle 文件，则可以通过 dev server 配置中的* [`publicPath`](https://v4.webpack.docschina.org/configuration/dev-server/#devserver-publicpath-) *选项进行修改。*
+
+* **Node.js API 来使用 dev-server**：如果你通过 **Node.js API 来使用 dev-server**， `devServer` 中的选项将被忽略。将选项作为第二个参数传入： `new WebpackDevServer(compiler, {...})`。关于如何通过 Node.js API 使用 webpack-dev-server 的示例，请 [查看此处](https://github.com/webpack/webpack-dev-server/tree/master/examples/api/simple)。
+* **inline:true**:在 dev-server 的两种不同模式之间切换。默认情况下，应用程序启用内联模式(inline mode)。这意味着一段处理实时重载的脚本被插入到你的包(bundle)中，并且构建消息将会出现在浏览器控制台。也可以使用 iframe 模式，它在通知栏下面使用 <iframe> 标签，包含了关于构建的消息。切换到 iframe 模式
+* **proxy**:dev-server 使用了非常强大的 [http-proxy-middleware](https://github.com/chimurai/http-proxy-middleware) 包。更多高级用法，请查阅其 [文档](https://github.com/chimurai/http-proxy-middleware#options)。
+
+## 4.4 使用 [webpack-dev-middleware](https://v4.webpack.docschina.org/guides/development/#%E4%BD%BF%E7%94%A8-webpack-dev-middleware)
+
+`webpack-dev-middleware` 是一个封装器(wrapper)，它可以把 webpack 处理过的文件发送到一个 server。 `webpack-dev-server` 在内部使用了它，然而它也可以作为一个单独的 package 来使用，以便根据需求进行更多自定义设置
+
+
 
