@@ -254,6 +254,26 @@ devServer: {
 * **Node.js API 来使用 dev-server**：如果你通过 **Node.js API 来使用 dev-server**， `devServer` 中的选项将被忽略。将选项作为第二个参数传入： `new WebpackDevServer(compiler, {...})`。关于如何通过 Node.js API 使用 webpack-dev-server 的示例，请 [查看此处](https://github.com/webpack/webpack-dev-server/tree/master/examples/api/simple)。
 * **inline:true**:在 dev-server 的两种不同模式之间切换。默认情况下，应用程序启用内联模式(inline mode)。这意味着一段处理实时重载的脚本被插入到你的包(bundle)中，并且构建消息将会出现在浏览器控制台。也可以使用 iframe 模式，它在通知栏下面使用 <iframe> 标签，包含了关于构建的消息。切换到 iframe 模式
 * **proxy**:dev-server 使用了非常强大的 [http-proxy-middleware](https://github.com/chimurai/http-proxy-middleware) 包。更多高级用法，请查阅其 [文档](https://github.com/chimurai/http-proxy-middleware#options)。
+[webpack5.X使用webpack-dev-server](https://blog.csdn.net/weixin_45047039/article/details/110287351)
+```js
+proxy:{ 
+    '/api' :{// 属性的名称就是要被代理的请求路径前缀
+        target:"https://api.github.com",
+        // http://localhost:8080/api/users ==> https://api.github.com/api/users
+        // 因为我们实际要请求的地址是https://api.github.com/users,所以我们需要通过重写的方式去掉/api
+        pathRewrite:{ // pathRewrite会以正则的方式去替换我们请求的路径
+            "^/api":""
+        },
+        // 因为代理服务器默认会以我们实际在浏览器中请求的主机名(例如我们的localhost:8080)作为代理请求的主机名
+        // 也就是说，我们在浏览器端对代理过后的地址发起请求，这个请求背后还需要去请求到github服务器，请求的过程中会带一个主机名
+        // 这个主机名默认会用我们在浏览器端发起请求的主机名，也就是localhost:8080
+        // 而一般情况下，服务器内需要根据主机名判断这个主机名属于哪个网站，从而把这个请求指派到对应网站
+        changeOrigin:true, // 如果接口跨域，需要进行这个参数配置为true
+        secure: false,      // 如果是https接口，需要配置这个参数为true
+    }
+}
+```
+*  使用`webpack serve --open`启动项目
 
 ## 4.4 使用 [webpack-dev-middleware](https://v4.webpack.docschina.org/guides/development/#%E4%BD%BF%E7%94%A8-webpack-dev-middleware)
 

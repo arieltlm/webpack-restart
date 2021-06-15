@@ -1,6 +1,8 @@
 import './style.css'
 import svgCanvas from './images/svg-canvas.png';
 import printMe from './print.js'
+import data from './test.xml'
+import data1 from './test1.xml'
 
 function component() {
     var element = document.createElement('div');
@@ -14,12 +16,28 @@ function component() {
     
     element.appendChild(myImg)
 
-    btn.innerHTML = '点击这里，然后查看1 console！';
+    
+    btn.innerHTML = '点击这里，然后查看1 cosole！';
     btn.onclick = printMe;
 
     element.appendChild(btn);
   
     return element;
   }
-  
+
+  function xmlEle() {
+    var elementxml = document.createElement('div');
+    elementxml.innerHTML = data.note.body;
+
+    return elementxml
+  }
+  function xmlEle1() {
+    var elementxml = document.createElement('div');
+    elementxml.innerHTML = data1.note.heading;
+
+    return elementxml
+  }  
+  document.body.appendChild(xmlEle());
+  document.body.appendChild(xmlEle1());
   document.body.appendChild(component());
+
