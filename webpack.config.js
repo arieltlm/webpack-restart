@@ -108,7 +108,16 @@ module.exports = {
                         },
                     }
                 ]
-            }
+            },
+            {
+                test: /\.txt$/,
+                use: {
+                  loader: path.resolve(__dirname, './src/loader/name-loader.js'),
+                  options:{
+                      name:'Tom'
+                  }
+                },
+            },
         ]
     },
     resolveLoader: {

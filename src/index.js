@@ -3,6 +3,7 @@ import svgCanvas from './images/svg-canvas.png';
 import printMe from './print.js'
 import data from './test.xml'
 import data1 from './test1.xml'
+import example from './example.txt'
 
 function component() {
     var element = document.createElement('div');
@@ -15,6 +16,8 @@ function component() {
     myImg.src = svgCanvas
     
     element.appendChild(myImg)
+
+    console.log('%c example===', 'color:#497EFC;background: #03FECF;', example) // Hey Tom
 
     
     btn.innerHTML = '点击这里，然后查看1 cosole！';
