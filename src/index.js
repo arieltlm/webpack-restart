@@ -40,6 +40,8 @@ function component() {
 
     return elementxml
   }  
+
+
   document.body.appendChild(xmlEle());
   document.body.appendChild(xmlEle1());
   document.body.appendChild(component());

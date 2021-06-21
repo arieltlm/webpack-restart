@@ -3,11 +3,13 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const {CleanWebpackPlugin} = require('clean-webpack-plugin');
 
 module.exports = {
+    // mode: 'none',
     mode: 'development',
     // entry: './src/index.js',
     entry:{
         app: './src/index.js',
-        print: './src/print.js'
+        print: './src/print.js',
+        // note: './src/note.js',
     },
     devtool: 'inline-source-map',
     // devtool: 'eval',
@@ -17,7 +19,7 @@ module.exports = {
         filename: '[name].bundle.js',
         path: path.resolve(__dirname, 'dist')
     },
-    target:'web',
+    target:'web', // 热更新需要配置
     devServer: {
         contentBase: path.join(__dirname, 'dist'), // 告诉 dev server，从什么位置查找文件,可以有多个 [path.join(__dirname, 'public'), path.join(__dirname, 'assets')]
         publicPath: '/', 
@@ -28,7 +30,7 @@ module.exports = {
         https: true, // 可以自己增加key,cert,ca
         inline: true, // 在 dev-server 的两种不同模式之间切换。默认情况下，应用程序启用内联模式(inline mode)。这意味着一段处理实时重载的脚本被插入到你的包(bundle)中，并且构建消息将会出现在浏览器控制台。也可以使用 iframe 模式，它在通知栏下面使用 <iframe> 标签，包含了关于构建的消息。切换到 iframe 模式
         port: 8081, // 指定要监听请求的端口号
-        open:true,
+        // open:true,
     },
     module: {
         rules: [
@@ -118,6 +120,18 @@ module.exports = {
                   }
                 },
             },
+            // { // 这个loader报错
+            //     test: /\.js$/,
+            //     // 因为配置了resolveLoader，在loader文件夹下找到了rfjsnote-loader
+            //     // loader: "rfjsnote-loader",
+            //     use: {
+            //         loader: path.resolve(__dirname, './src/loader/rfjsnote-loader.js'),
+            //         options:{
+            //             oneLine: true, // 是否删除单行注释
+            //             multiline: true, // 是否删除多行注释
+            //         }
+            //     }
+            // }
         ]
     },
     resolveLoader: {
