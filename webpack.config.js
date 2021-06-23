@@ -1,6 +1,11 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const {CleanWebpackPlugin} = require('clean-webpack-plugin');
+const HelloWorldPlugin = require('./src/plugins/hello-world');
+const MyPlugin = require('./src/plugins/my-plugin');
+const MyAsyncPlugin = require('./src/plugins/my-async-plugin')
+const AddWordPlugin = require('./src/plugins/addword-bundle-plugin')
+
 
 module.exports = {
     // mode: 'none',
@@ -142,6 +147,14 @@ module.exports = {
         new CleanWebpackPlugin(),
         new HtmlWebpackPlugin({
             title: '管理输出'
-        })
+        }),
+        new HelloWorldPlugin(),
+        new MyPlugin({
+            name:"my plugin"
+        }),
+        new MyAsyncPlugin({
+            title:'异步插件'
+        }),
+        new AddWordPlugin()
     ],
 };
