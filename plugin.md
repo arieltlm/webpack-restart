@@ -5,6 +5,7 @@
 [Webpack5.0学习总结-进阶篇](https://juejin.cn/post/6975321674015047693?utm_source=gold_browser_extension#heading-15)
 [webpack插件怎么手写](https://blog.csdn.net/wade3po/article/details/108493825)
 [官方教程-编写一个插件](https://www.webpackjs.com/contribute/writing-a-plugin/)
+[webpack06----自定义babel-loader、tapable、compiler的hooks使用、compilation的使用、自定义copy-webpack-plugin插件、自定义webpack](https://www.cnblogs.com/wuqilang/p/13962210.html)
 
 Webpack的打包过程就像一个产品的流水线，按部就班地执行一个又一个环节。而插件就是在这条流水线各个阶段插入的额外功能，Webpack以此来扩展自身的功能
 
@@ -22,8 +23,8 @@ webpack本质上是一种事件流机制，核心就是tapable，通过注册事
 
 ```js
 const {
-	SyncHook,
-	SyncBailHook,
+	SyncHook, // 同步钩子（hook），任务会依次执行
+	SyncBailHook, // 一旦有返回值就会退出
 	SyncWaterfallHook,
 	SyncLoopHook,
 	AsyncParallelHook,
@@ -55,3 +56,88 @@ webpack 插件由以下组成
 * 指定一个绑定到 webpack 自身的事件钩子。
 * 处理 webpack 内部实例的特定数据。
 * 功能完成后调用 webpack 提供的回调。
+## 已有插件探究
+### 1.clean-webpack-plugin
+
+```js
+
+    apply(compiler: Compiler) {
+        // ...
+        this.outputPath = compiler.options.output.path;
+        const hooks = compiler.hooks;
+
+        if (this.cleanOnceBeforeBuildPatterns.length !== 0) {
+            hooks.emit.tap('clean-webpack-plugin', (compilation) => { // 编译前
+                this.handleInitial(compilation);
+            });
+        }
+
+        hooks.done.tap('clean-webpack-plugin', (stats) => { // 编译完成后
+            this.handleDone(stats);
+        });
+    }
+```
+
+### 2.html-webpack-plugin
+
+```js
+ compiler.hooks.initialize.tap('HtmlWebpackPlugin', () => {
+      const userOptions = this.userOptions;
+
+      // Default options
+      /** @type {ProcessedHtmlWebpackOptions} */
+      const defaultOptions = {
+        // ...
+      };
+
+      /** @type {ProcessedHtmlWebpackOptions} */
+      const options = Object.assign(defaultOptions, userOptions);
+      this.options = options;
+
+      //...
+
+      // Hook all options into the webpack compiler
+      entryOptions.forEach((instanceOptions) => {
+        hookIntoCompiler(compiler, instanceOptions, this);
+      });
+ })
+
+
+/**
+ * connect the html-webpack-plugin to the webpack compiler lifecycle hooks
+ *
+ * @param {import('webpack').Compiler} compiler
+ * @param {ProcessedHtmlWebpackOptions} options
+ * @param {HtmlWebpackPlugin} plugin
+ */
+function hookIntoCompiler (compiler, options, plugin) {
+  const webpack = compiler.webpack;
+  // ...
+  compiler.hooks.thisCompilation.tap('HtmlWebpackPlugin',
+    /**
+       * Hook into the webpack compilation
+       * @param {WebpackCompilation} compilation
+      */
+    (compilation) => {
+      compilation.hooks.processAssets.tapAsync(
+        {
+          name: 'HtmlWebpackPlugin',
+          stage:
+          /**
+           * Generate the html after minification and dev tooling is done
+           */
+          webpack.Compilation.PROCESS_ASSETS_STAGE_OPTIMIZE_INLINE
+        },
+        /**
+         * Hook into the process assets hook
+         * @param {WebpackCompilation} compilationAssets
+         * @param {(err?: Error) => void} callback
+         */
+        (compilationAssets, callback) => {
+            //...
+        })
+    })
+}
+```
+
+### 3.copy-webpack-plugin
