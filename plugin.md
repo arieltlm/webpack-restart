@@ -35,6 +35,16 @@ const {
  } = require("tapable")
 ```
 
+**hook 类型**：
+* Basic hook：基本的hook，就将tap钩上的方法串行调用
+* Waterfall： 它将每个函数的返回值传递给下一个函数
+* Bail：一旦有返回值就会退出
+* Loop：当循环钩子中的一个插件返回一个非未定义的值时，该钩子将从第一个插件重启。它将循环直到所有插件返回undefined
+
+**hook分类**：
+* Sync：同步。一般就是使用`myHook.tap()`
+* AsyncSeries: 串行用，可以使用`myHook.tap()`, `myHook.tapAsync()` 和 `myHook.tapPromise()`
+* AsyncParallel:并行用，可以使用`myHook.tap()`, `myHook.tapAsync()` 和 `myHook.tapPromise()`
 
 
 ## compiler对象
