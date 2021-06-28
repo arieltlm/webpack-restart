@@ -6,7 +6,8 @@
   "scripts": {
     "start0": "webpack --watch --config webpack.config.js",
     "start": "webpack serve --open",
-    "server": "node server/index.js"
+    "server": "node server/index.js",
+    "build":"webpack --config webpack.config.js"
   },
   "keywords": [],
   "author": "",

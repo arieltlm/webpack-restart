@@ -4,7 +4,7 @@ class MyAsyncPlugin{
     }
 
     apply(compiler) {
-        compiler.hooks.done.tapAsync('MyAsyncPlugin',(params,callback) => {
+        compiler.hooks.done.tapAsync('MyAsyncPlugin',(stats,callback) => {
             // callback 是需要怎么传递进来？
             console.log('Hello ', this.options.title);
 

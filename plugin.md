@@ -47,14 +47,28 @@ const {
 * AsyncParallel:并行用，可以使用`myHook.tap()`, `myHook.tapAsync()` 和 `myHook.tapPromise()`
 
 
+
+
 ## compiler对象
 代表了完整的webpakc环境配置，可以访问整个环境。此对象在启动webpack时被创建；同时该对象也会被传入一些可控的配置，如 Options、Loaders、Plugins。当插件被实例化的时候，会收到一个 Compiler 对象，通过这个对象可以访问 Webpack 的内部环境。
 
+**complier钩子**：
+* entryOption：在 entry 配置项处理过之后，执行插件
+* thisCompilation：触发 compilation 事件之前执行
+* compilation：编译(compilation)创建之后，执行插件
+* emit: 生成资源到 output 目录之前
+* afterEmit:生成资源到 output 目录之后
+* done: 编译(compilation)完成
+* failed: 编译(compilation)失败
 
 ## compilation
 compilation 对象代表了一次资源版本构建。在运行过程中，每当检测到一个文件变化，就会创建一个新的 compilation，从而生成一组新的编译资源。一个 compilation 对象表现了当前的模块资源、编译生成资源、变化的文件、以及被跟踪依赖的状态信息。compilation提供了很多关键时机的回调供插件做自定义处理时使用
 
 compilation，里面有assets是静态资源，可以进行操作；
+
+Compilation 模块会被 Compiler 用来创建新的编译（或新的构建）。compilation 实例能够访问所有的模块和它们的依赖（大部分是循环依赖）。它会对应用程序的依赖图中所有模块进行字面上的编译(literal compilation)。在编译阶段，模块会被加载(loaded)、封存(sealed)、优化(optimized)、分块(chunked)、哈希(hashed)和重新创建(restored)
+
+[官方API](https://www.webpackjs.com/api/compilation-hooks/)
 
 > 关于提供的hook和参数，可以在webpack>lib>Compiler.js搜hooks，其实compiler和compilation都是继承tapable。
 ## 插件
