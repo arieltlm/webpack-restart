@@ -5,7 +5,7 @@ class MyAsyncPlugin{
 
     apply(compiler) {
         compiler.hooks.done.tapAsync('MyAsyncPlugin',(stats,callback) => {
-            // callback 是需要怎么传递进来？
+            // 异步的事件会附带两个参数，第二个参数为回调函数
             console.log('Hello ', this.options.title);
 
             setTimeout(() => {console.log(1);}, 1000);

@@ -14,7 +14,7 @@ class AddWordPlugin {
         /*BREAKING CHANGE: No more changes should happen to Compilation.assets after sealing the Compilation.
         Do changes to assets earlier, e. g. in Compilation.hooks.processAssets.
         Make sure to select an appropriate stage from Compilation.PROCESS_ASSETS_STAGE_*.*/
-        compiler.hooks.emit.tap('AddWordPlugin', (compilation) => {
+        /* compiler.hooks.emit.tap('AddWordPlugin', (compilation) => {
             const {assets } = compilation
             const content = assets['print.bundle.js'].source()
             console.log('AddWordPlugin ', content);
@@ -26,9 +26,9 @@ class AddWordPlugin {
                     return content.length;
                 }
             }
-        })
+        }) */
         // 报错了--(node:68109) UnhandledPromiseRejectionWarning: TypeError: asset.map is not a function
-        /* compiler.hooks.thisCompilation.tap('AddWordPlugin', (compilation) => {
+        compiler.hooks.thisCompilation.tap('AddWordPlugin', (compilation) => {
             compilation.hooks.processAssets.tapAsync('aaa',(assets,callback)=> {
                 const content = assets['print.bundle.js'].source()
                 console.log('AddWordPlugin ', content);
@@ -42,7 +42,7 @@ class AddWordPlugin {
                 }
                 callback()
             })
-        }) */
+        })
 
     }
 

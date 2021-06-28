@@ -16,7 +16,7 @@ plugins 不行，他必须编写好这个 plugin 之后在 webpack 构建中将 
 
 [[ webpack ] webpack 的 loader 和 plugin 开发的方法](https://juejin.cn/post/6972756491715477541?utm_source=gold_browser_extension)
 
-### 
+
 
 `webpack` 只能理解 `JavaScript` 和 `JSON` 文件。`loader` 让 `webpack` 能够去处理其他类型的文件，并将它们转换为有效模块，以供应用程序使用，以及被添加到依赖图中
 
