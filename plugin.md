@@ -2,10 +2,13 @@
 
 **参考**：
 
+[webpack5变更官方说明](https://webpack.docschina.org/blog/2020-10-10-webpack-5-release/)
 [Webpack5.0学习总结-进阶篇](https://juejin.cn/post/6975321674015047693?utm_source=gold_browser_extension#heading-15)
 [webpack插件怎么手写](https://blog.csdn.net/wade3po/article/details/108493825)
 [官方教程-编写一个插件](https://www.webpackjs.com/contribute/writing-a-plugin/)
 [webpack06----自定义babel-loader、tapable、compiler的hooks使用、compilation的使用、自定义copy-webpack-plugin插件、自定义webpack](https://www.cnblogs.com/wuqilang/p/13962210.html)
+[Webpack原理-编写Plugin](https://segmentfault.com/a/1190000012840742)
+[输出结果 配置_从webpack配置工程师走向开发工程师进阶](https://blog.csdn.net/weixin_36285826/article/details/112590904)
 
 Webpack的打包过程就像一个产品的流水线，按部就班地执行一个又一个环节。而插件就是在这条流水线各个阶段插入的额外功能，Webpack以此来扩展自身的功能
 
@@ -18,8 +21,12 @@ webpack本质上是一种事件流机制，核心就是tapable，通过注册事
 插件能够 钩入(hook) 到在每个编译(compilation)中触发的所有关键事件。在编译的每一步，插件都具备完全访问 compiler 对象的能力，如果情况合适，还可以访问当前 compilation 对象
 
 ## Tapable工具类
-[Tapable 工具类](https://github.com/webpack/tapable)
+[Tapable 工具类github](https://github.com/webpack/tapable)
 [官方文档](https://www.webpackjs.com/api/plugins/#tapable)
+
+
+
+Tapable的核心功能就是依据不同的钩子将注册的事件在被触发时按序执行。
 
 ```js
 const {
@@ -36,17 +43,31 @@ const {
 ```
 
 **hook 类型**：
-* Basic hook：基本的hook，就将tap钩上的方法串行调用
-* Waterfall： 瀑布；它将每个函数的返回值传递给下一个函数
-* Bail：一旦有返回值就会退出
-* Loop：当循环钩子中的一个插件返回一个非未定义的值时，该钩子将从第一个插件重启。它将循环直到所有插件返回undefined
+* Basic hook：按照事件注册顺序，依次执行`handler`，`handler`之间互不干扰
+* Waterfall： 瀑布；按照事件注册顺序，依次执行`handler`，前一个`handler`的返回值将作为下一个`handler`的入参
+* Bail：按照事件注册顺序，依次执行`handler`，若其中任一`handler`返回值不为`undefined`，则剩余的`handler`均不会执行；（一旦有返回值就会退出）
+* Loop：按照事件注册顺序，依次执行`handler`，若任一`handler`的返回值不为`undefined`，则该事件链再次**从头**开始执行，直到所有`handler`均返回`undefined`
 
 **hook分类**：
 * Sync：同步。一般就是使用`myHook.tap()`
 * AsyncSeries: 串行用，可以使用`myHook.tap()`, `myHook.tapAsync()` 和 `myHook.tapPromise()`
 * AsyncParallel:并行用，可以使用`myHook.tap()`, `myHook.tapAsync()` 和 `myHook.tapPromise()`
 
+## webpack工作流程
 
+Webpack 的运行流程是一个串行的过程，从启动到结束会依次执行以下流程：
+
+1. 初始化参数：从配置文件和 Shell 语句中读取与合并参数，得出最终的参数；
+2. 开始编译：用上一步得到的参数初始化 Compiler 对象，加载所有配置的插件，执行对象的 run 方法开始执行编译；
+3. 确定入口：根据配置中的 entry 找出所有的入口文件；
+4. 编译模块：从入口文件出发，调用所有配置的 Loader 对模块进行翻译，再找出该模块依赖的模块，再递归本步骤直到所有入口依赖的文件都经过了本步骤的处理；
+5. 完成模块编译：在经过第4步使用 Loader 翻译完所有模块后，得到了每个模块被翻译后的最终内容以及它们之间的依赖关系；
+6. 输出资源：根据入口和模块之间的依赖关系，组装成一个个包含多个模块的 Chunk，再把每个 Chunk 转换成一个单独的文件加入到输出列表，这步是可以修改输出内容的最后机会；
+7. 输出完成：在确定好输出内容后，根据配置确定输出的路径和文件名，把文件内容写入到文件系统。
+
+![image-20210629203318745](/Users/tlm/Documents/web-front/test/keep-study/webpack-box/webpack-restart/typora-image/image-20210629203318745.png)
+
+在以上过程中，Webpack 会在特定的时间点广播出特定的事件，插件在监听到感兴趣的事件后会执行特定的逻辑，并且插件可以调用 Webpack 提供的 API 改变 Webpack 的运行结果;
 
 
 ## compiler对象
@@ -61,6 +82,15 @@ const {
 * done: 编译(compilation)完成
 * failed: 编译(compilation)失败
 
+
+
+`compiler.options`中包含所有的webpack配置。
+
+```js
+// 当前配置所有使用的插件列表  
+const plugins = compiler.options.plugins; 
+```
+
 ## compilation
 compilation 对象代表了一次资源版本构建。在运行过程中，每当检测到一个文件变化，就会创建一个新的 compilation，从而生成一组新的编译资源。一个 compilation 对象表现了当前的模块资源、编译生成资源、变化的文件、以及被跟踪依赖的状态信息。compilation提供了很多关键时机的回调供插件做自定义处理时使用
 
@@ -69,6 +99,8 @@ compilation，里面有assets是静态资源，可以进行操作；
 Compilation 模块会被 Compiler 用来创建新的编译（或新的构建）。compilation 实例能够访问所有的模块和它们的依赖（大部分是循环依赖）。它会对应用程序的依赖图中所有模块进行字面上的编译(literal compilation)。在编译阶段，模块会被加载(loaded)、封存(sealed)、优化(optimized)、分块(chunked)、哈希(hashed)和重新创建(restored)
 
 [官方API](https://www.webpackjs.com/api/compilation-hooks/)
+
+在webpack/type.d.ts中可以看到compilation和compiler的hooks定义；具体代码需要读源码；
 
 > 关于提供的hook和参数，可以在webpack>lib>Compiler.js搜hooks，其实compiler和compilation都是继承tapable。
 ***
@@ -79,7 +111,7 @@ Compiler 和 Compilation 的区别在于：Compiler 代表了整个 Webpack 从�
 插件其实就是一个类（构造函数或者class类），内部在prototype定义一个apply方法（会直接调用），并提供compiler，通过compiler提供的hooks注册事件和在相应的回调里面进行操作。而compiler提供的compilation的重要属性是assets，表示所有的静态资源
 
 webpack 插件由以下组成
-* 一个 JavaScript 命名函数。
+* 一个 JavaScript构造函数或者class类。
 
 * 在插件函数的 prototype 上定义一个 apply 方法。
 
@@ -101,8 +133,9 @@ class MyPlugin{
     this.options = options
   }
   
-  // Webpack 会调用 BasicPlugin 实例的 apply 方法给插件实例传入 compiler 对象
+  // Webpack 会调用 MyPlugin 实例的 apply 方法给插件实例传入 compiler 对象
  apply(compiler){
+   			/* 在 hook 被触及时，会将 stats 作为参数传入。 */
         compiler.hooks.done.tap('MyPlugin', (stats) => {
             // stats中有compilation对象，endTime、startTime、hash
             // stats.startTime；stats.endTime 时间戳；
@@ -113,7 +146,7 @@ class MyPlugin{
 }
 
 // 导出 Plugin
-module.exports = BasicPlugin;
+module.exports = MyPlugin;
 ```
 
 使用：
@@ -242,6 +275,12 @@ function hookIntoCompiler (compiler, options, plugin) {
 
 获取hooks，就是这个插件暴露出去的getHooks，即组件上自定义的hooks：
 
+>  [webpack5变化之—冻结钩子对象](https://webpack.docschina.org/blog/2020-10-10-webpack-5-release/#hook-object-frozen)
+
+> 有 `hooks` 的类会冻结其 `hooks` 对象，所以通过这种方式添加自定义钩子已经不可能了。
+>
+> **迁移**：推荐的添加自定义钩子的方式是使用 WeakMap 和一个静态的 `getXXXHooks(XXX)`(即`getCompilationHook(compilation)`)方法。内部类使用与自定义钩子相同的机制]
+
 ```js
 /**
  * @type {WeakMap<WebpackCompilation, HtmlWebpackPluginHooks>}}
@@ -282,11 +321,45 @@ function createHtmlWebpackPluginHooks () {
 }
 ```
 
-
-
 ### 3.copy-webpack-plugin
 
-## 4.InterpolateHtmlPlugin(新框架中的插件)
+```js
+apply(compiler) {
+    const pluginName = this.constructor.name;
+    const limit = pLimit(this.options.concurrency || 100);
+
+    compiler.hooks.thisCompilation.tap(pluginName, (compilation) => {
+      const logger = compilation.getLogger("copy-webpack-plugin");
+      const cache = compilation.getCache("CopyWebpackPlugin");
+
+      compilation.hooks.processAssets.tapAsync(
+        {
+          name: "copy-webpack-plugin",
+          stage: compiler.webpack.Compilation.PROCESS_ASSETS_STAGE_ADDITIONAL,
+        },
+        async (unusedAssets, callback) => {
+          logger.log("starting to add additional assets...");
+          // ...
+        })
+    }
+}
+```
+
+
+
+## 4.webpack-bundle-analyzer
+
+```js
+ if (compiler.hooks) {
+   compiler.hooks.done.tapAsync('webpack-bundle-analyzer', done); // 监听done事件
+ } else {
+   compiler.plugin('done', done); // webpack4使用
+ }
+```
+
+
+
+## 5.InterpolateHtmlPlugin(新框架中的插件)
 
 所有的配置都会传递给 `InterpolateHtmlPlugin` 插件，可在 `index.ejs` 中使用。使用方式： `%publicPath%`。并且可添加自定义内容：`[key: string]: any`
 

@@ -4,7 +4,7 @@ const parser = new xml2js.Parser();
 const loaderUtils = require('loader-utils');
 
 module.exports =  function(source) {
-    console.log(source) // 就是test.xml中的源代码;重启webapck 可以看到依次打印了两个xml的源代码文件
+    // console.log(source) // 就是test.xml中的源代码;重启webapck 可以看到依次打印了两个xml的源代码文件
     // 在有些情况下，有些转换操作需要大量计算非常耗时，如果每次构建都重新执行重复的转换操作，构建将会变得非常缓慢。 
     // 为此，Webpack 会默认缓存所有 Loader 的处理结果，也就是说在需要被处理的文件或者其依赖的文件没有发生变化时， 是不会重新调用对应的 Loader 去执行转换操作的。
     this.cacheable && this.cacheable();

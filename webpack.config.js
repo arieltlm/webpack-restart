@@ -4,8 +4,8 @@ const {CleanWebpackPlugin} = require('clean-webpack-plugin');
 const HelloWorldPlugin = require('./src/plugins/hello-world');
 const MyPlugin = require('./src/plugins/my-plugin');
 const MyAsyncPlugin = require('./src/plugins/my-async-plugin')
-const AddWordPlugin = require('./src/plugins/addword-bundle-plugin')
-
+const AddNamePlugin = require('./src/plugins/addname-bundle-plugin')
+const EndWebpackPlugin = require('./src/plugins/end-webpack-plugin')
 
 module.exports = {
     // mode: 'none',
@@ -155,6 +155,16 @@ module.exports = {
         new MyAsyncPlugin({
             title:'异步插件'
         }),
-        new AddWordPlugin()
+        new AddNamePlugin({
+            name:'tlm'
+        }),
+        // 在初始化 EndWebpackPlugin 时传入了两个参数，分别是在成功时的回调函数和失败时的回调函数；
+        new EndWebpackPlugin(() => {
+            // Webpack 构建成功，并且文件输出了后会执行到这里，在这里可以做发布文件操作
+            console.log('构建成功')
+        }, (err) => {
+            // Webpack 构建失败，err 是导致错误的原因
+            console.error(err);        
+        }),
     ],
 };
