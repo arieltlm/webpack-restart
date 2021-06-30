@@ -43,7 +43,7 @@ class AddNamePlugin {
                 const content = printBunble.source()
                 // console.log('AddNamePlugin ', content);
                 // 获取输出资源的文件大小 
-                console.log(asset.size(),'asset.size()')
+                console.log(printBunble.size(),'printBunble.size()')
                 
                 const {name} = this.options
 

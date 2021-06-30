@@ -9,6 +9,7 @@
 [webpack06----自定义babel-loader、tapable、compiler的hooks使用、compilation的使用、自定义copy-webpack-plugin插件、自定义webpack](https://www.cnblogs.com/wuqilang/p/13962210.html)
 [Webpack原理-编写Plugin](https://segmentfault.com/a/1190000012840742)
 [输出结果 配置_从webpack配置工程师走向开发工程师进阶](https://blog.csdn.net/weixin_36285826/article/details/112590904)
+[揭秘webpack插件工作流程和原理](https://blog.csdn.net/frontend_frank/article/details/106205260)
 
 Webpack的打包过程就像一个产品的流水线，按部就班地执行一个又一个环节。而插件就是在这条流水线各个阶段插入的额外功能，Webpack以此来扩展自身的功能
 
@@ -23,10 +24,11 @@ webpack本质上是一种事件流机制，核心就是tapable，通过注册事
 ## Tapable工具类
 [Tapable 工具类github](https://github.com/webpack/tapable)
 [官方文档](https://www.webpackjs.com/api/plugins/#tapable)
-
+[webpack4Tapable源码解析](https://www.cnblogs.com/tugenhua0707/p/11317557.html)
 
 
 Tapable的核心功能就是依据不同的钩子将注册的事件在被触发时按序执行。
+Tapable也是一个小型的 library，是Webpack的一个核心工具。类似于node中的events库，核心原理就是一个订阅发布模式。作用是提供类似的插件接口
 
 ```js
 const {

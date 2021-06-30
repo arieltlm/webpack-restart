@@ -1,8 +1,9 @@
+// webpack4的写法，5报错；可理解基本逻辑
 // 读取输出资源、代码块、模块及其依赖
 // https://segmentfault.com/a/1190000012840742
 class Plugin {
     apply(compiler) {
-      compiler.plugin('emit', function (compilation, callback) {
+      compiler.hooks.emit.tap('Plugin', function (compilation, callback) {
         // compilation.chunks 存放所有代码块，是一个数组
         compilation.chunks.forEach(function (chunk) {
           // chunk 代表一个代码块
@@ -30,3 +31,6 @@ class Plugin {
       })
     }
   }
+
+
+  module.exports = Plugin;
