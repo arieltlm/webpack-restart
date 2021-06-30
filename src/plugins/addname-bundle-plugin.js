@@ -32,10 +32,13 @@ class AddNamePlugin {
             }
         }) */
         compiler.hooks.thisCompilation.tap('AddNamePlugin', (compilation) => {
-            compilation.hooks.processAssets.tapAsync(
+            console.log('thisCompilation-AddNamePlugin','1111')
+            compilation.hooks.processAssets.tapAsync( // asset 处理
                 {
                     name: 'AddNamePlugin',
+                    // stage 可见https://webpack.docschina.org/api/compilation-hooks/
                     stage:webpack.Compilation.PROCESS_ASSETS_STAGE_OPTIMIZE_INLINE
+                    // stage:webpack.Compilation.PROCESS_ASSETS_STAGE_ADDITIONS
                   },(compilationAssets,callback)=> {
                 // 读取名称为 print.bundle.js 的输出资源 
                 const printBunble = compilationAssets['print.bundle.js']
@@ -43,7 +46,7 @@ class AddNamePlugin {
                 const content = printBunble.source()
                 // console.log('AddNamePlugin ', content);
                 // 获取输出资源的文件大小 
-                console.log(printBunble.size(),'printBunble.size()')
+                console.log('compilation.processAssets.tapAsync-printBunble.size()',printBunble.size()) // 与content.length相等
                 
                 const {name} = this.options
 
@@ -55,6 +58,7 @@ class AddNamePlugin {
                         return content.length;
                     }
                 }
+               
                 callback()
             })
         })

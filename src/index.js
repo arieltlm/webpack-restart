@@ -2,7 +2,7 @@ import './style.css'
 import svgCanvas from './images/svg-canvas.png';
 import printMe from './print.js'
 import data from './test.xml'
-import data1 from './test1.xml'
+// import data1 from './test1.xml'
 import example from './example.txt'
 
 function component() {
@@ -34,15 +34,15 @@ function component() {
 
     return elementxml
   }
-  function xmlEle1() {
-    var elementxml = document.createElement('div');
-    elementxml.innerHTML = data1.note.heading;
+//   function xmlEle1() {
+//     var elementxml = document.createElement('div');
+//     elementxml.innerHTML = data1.note.heading;
 
-    return elementxml
-  }  
+//     return elementxml
+//   }  
 
 
   document.body.appendChild(xmlEle());
-  document.body.appendChild(xmlEle1());
+//   document.body.appendChild(xmlEle1());
   document.body.appendChild(component());
 

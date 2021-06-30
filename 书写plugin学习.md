@@ -1,21 +1,8 @@
 # webpack插件
 
-**参考**：
-
-[webpack5变更官方说明](https://webpack.docschina.org/blog/2020-10-10-webpack-5-release/)
-[Webpack5.0学习总结-进阶篇](https://juejin.cn/post/6975321674015047693?utm_source=gold_browser_extension#heading-15)
-[webpack插件怎么手写](https://blog.csdn.net/wade3po/article/details/108493825)
-[官方教程-编写一个插件](https://www.webpackjs.com/contribute/writing-a-plugin/)
-[webpack06----自定义babel-loader、tapable、compiler的hooks使用、compilation的使用、自定义copy-webpack-plugin插件、自定义webpack](https://www.cnblogs.com/wuqilang/p/13962210.html)
-[Webpack原理-编写Plugin](https://segmentfault.com/a/1190000012840742)
-[输出结果 配置_从webpack配置工程师走向开发工程师进阶](https://blog.csdn.net/weixin_36285826/article/details/112590904)
-[揭秘webpack插件工作流程和原理](https://blog.csdn.net/frontend_frank/article/details/106205260)
-
 Webpack的打包过程就像一个产品的流水线，按部就班地执行一个又一个环节。而插件就是在这条流水线各个阶段插入的额外功能，Webpack以此来扩展自身的功能
 
-
 创建插件比创建 loader 更加高级，因为你将需要理解一些 webpack 底层的内部特性来做相应的钩子，所以做好阅读一些源码的准备
-
 
 webpack本质上是一种事件流机制，核心就是tapable，通过注册事件，触发回调，完成插件在不同生命周期的调用，内部也是通过大量的插件实现的。tapable内部暴露的方法挺多的，主要就是同步和异步，异步分为并行和串行
 
@@ -67,7 +54,7 @@ Webpack 的运行流程是一个串行的过程，从启动到结束会依次执
 6. 输出资源：根据入口和模块之间的依赖关系，组装成一个个包含多个模块的 Chunk，再把每个 Chunk 转换成一个单独的文件加入到输出列表，这步是可以修改输出内容的最后机会；
 7. 输出完成：在确定好输出内容后，根据配置确定输出的路径和文件名，把文件内容写入到文件系统。
 
-![image-20210629203318745](/Users/tlm/Documents/web-front/test/keep-study/webpack-box/webpack-restart/typora-image/image-20210629203318745.png)
+![image-20210629203318745](./typora-image/image-20210629203318745.png)
 
 在以上过程中，Webpack 会在特定的时间点广播出特定的事件，插件在监听到感兴趣的事件后会执行特定的逻辑，并且插件可以调用 Webpack 提供的 API 改变 Webpack 的运行结果;
 
@@ -84,7 +71,10 @@ Webpack 的运行流程是一个串行的过程，从启动到结束会依次执
 * done: 编译(compilation)完成
 * failed: 编译(compilation)失败
 
+[https://webpack.docschina.org/api/compiler-hooks/](https://webpack.docschina.org/api/compiler-hooks/):更完整的中文文档
+[https://www.webpackjs.com/api/compiler-hooks/](https://www.webpackjs.com/api/compiler-hooks/)
 
+`compiler`继承自tapable,然后其上存在两个方法`.run(callback)`和`.watch(watchOptions, handler)`,执行构建并监听变更;--[compiler实例](https://www.webpackjs.com/api/node/#compiler-%E5%AE%9E%E4%BE%8B-compiler-instance-)
 
 `compiler.options`中包含所有的webpack配置。
 
@@ -347,9 +337,7 @@ apply(compiler) {
 }
 ```
 
-
-
-## 4.webpack-bundle-analyzer
+### 4.webpack-bundle-analyzer
 
 ```js
  if (compiler.hooks) {
@@ -359,9 +347,7 @@ apply(compiler) {
  }
 ```
 
-
-
-## 5.InterpolateHtmlPlugin(新框架中的插件)
+### 5.InterpolateHtmlPlugin(新框架中的插件)
 
 所有的配置都会传递给 `InterpolateHtmlPlugin` 插件，可在 `index.ejs` 中使用。使用方式： `%publicPath%`。并且可添加自定义内容：`[key: string]: any`
 
@@ -410,3 +396,13 @@ module.exports = InterpolateHtmlPlugin
 new InterpolateHtmlPlugin(HtmlWebpackPlugin, defaultConfig)
 ```
 
+**参考**：
+[webpack5变更官方说明](https://webpack.docschina.org/blog/2020-10-10-webpack-5-release/)
+[Webpack5.0学习总结-进阶篇](https://juejin.cn/post/6975321674015047693?utm_source=gold_browser_extension#heading-15)
+[webpack插件怎么手写](https://blog.csdn.net/wade3po/article/details/108493825)
+[官方教程-编写一个插件](https://www.webpackjs.com/contribute/writing-a-plugin/)
+[webpack06----自定义loader、插件](https://www.cnblogs.com/wuqilang/p/13962210.html)
+[Webpack原理-编写Plugin](https://segmentfault.com/a/1190000012840742)
+[输出结果 配置_从webpack配置工程师走向开发工程师进阶](https://blog.csdn.net/weixin_36285826/article/details/112590904)
+[揭秘webpack插件工作流程和原理](https://blog.csdn.net/frontend_frank/article/details/106205260)
+[webpack4.0各个击破（7）—— plugin篇](https://www.cnblogs.com/dashnowords/p/9572749.html)

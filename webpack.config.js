@@ -6,6 +6,8 @@ const MyPlugin = require('./src/plugins/my-plugin');
 const MyAsyncPlugin = require('./src/plugins/my-async-plugin')
 const AddNamePlugin = require('./src/plugins/addname-bundle-plugin')
 const EndWebpackPlugin = require('./src/plugins/end-webpack-plugin')
+const Plugin1 = require('./src/plugins/compiler-plugin')
+const Plugin2 = require('./src/plugins/compliatioin-asset-plugin')
 
 module.exports = {
     // mode: 'none',
@@ -47,7 +49,19 @@ module.exports = {
                 use: ['babel-loader?cacheDirectory'],
                 // 只命中src目录里的js文件，加快 Webpack 搜索速度
                 include: path.resolve(__dirname, 'src')
-            },     */      
+            },     */  
+            /* { // 这个loader报错
+                test: /\.js$/,
+                // 因为配置了resolveLoader，在loader文件夹下找到了rfjsnote-loader
+                // loader: "rfjsnote-loader",
+                use: {
+                    loader: path.resolve(__dirname, './src/loader/rfjsnote-loader.js'),
+                    options:{
+                        oneLine: true, // 是否删除单行注释
+                        multiline: true, // 是否删除多行注释
+                    }
+                }
+            },   */ 
             {
                 test: /\.css$/,
                 use: [
@@ -125,18 +139,7 @@ module.exports = {
                   }
                 },
             },
-            // { // 这个loader报错
-            //     test: /\.js$/,
-            //     // 因为配置了resolveLoader，在loader文件夹下找到了rfjsnote-loader
-            //     // loader: "rfjsnote-loader",
-            //     use: {
-            //         loader: path.resolve(__dirname, './src/loader/rfjsnote-loader.js'),
-            //         options:{
-            //             oneLine: true, // 是否删除单行注释
-            //             multiline: true, // 是否删除多行注释
-            //         }
-            //     }
-            // }
+           
         ]
     },
     resolveLoader: {
@@ -166,5 +169,7 @@ module.exports = {
             // Webpack 构建失败，err 是导致错误的原因
             console.error(err);        
         }),
+        new Plugin1(),
+        new Plugin2(),
     ],
 };
